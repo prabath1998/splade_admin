@@ -2,9 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Tables\Users;
 use Illuminate\Http\Request;
+use ProtoneMedia\Splade\Facades\Toast;
 
 class UserController extends Controller
 {
@@ -23,15 +26,22 @@ class UserController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.users.create');
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreUserRequest $request)
     {
-        //
+        User::create($request->validated());
+        Toast::title('Created!')
+            ->message('New user created successfully')
+            ->success()
+            ->rightTop()
+            ->backdrop()
+            ->autoDismiss(1);
+        return to_route('admin.users.index');
     }
 
     /**
@@ -53,16 +63,31 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(UpdateUserRequest $request, User $user)
     {
-        //
+        $user->update($request->validated());
+        // Splade::toast("User updated successfully!");
+        Toast::title('Updated!')
+            ->message('user updated successfully')
+            ->success()
+            ->rightTop()
+            ->backdrop()
+            ->autoDismiss(1);
+        return to_route('admin.users.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(User $user)
     {
-        //
+        $user->delete();
+        Toast::title('Deleted!')
+        ->message('User deleted successfully')
+        ->success()
+        ->rightTop()
+        ->backdrop()
+        ->autoDismiss(1);
+    return to_route('admin.users.index');
     }
 }
