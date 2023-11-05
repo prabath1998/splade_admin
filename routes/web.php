@@ -59,7 +59,7 @@ Route::middleware('splade')->group(function () {
         Route::resource('/cities', CityController::class);
         Route::resource('/departments', DepartmentController::class);
         Route::resource('/roles', RoleController::class);
-        Route::resource('/permissons', PermissionController::class);
+        Route::resource('/permissions', PermissionController::class);
     });
 
     require __DIR__ . '/auth.php';
