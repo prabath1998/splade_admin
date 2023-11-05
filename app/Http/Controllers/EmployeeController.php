@@ -131,7 +131,11 @@ class EmployeeController extends Controller
      */
     public function update(CreateEmployeeRequest $request, Employee $employee)
     {
-        $employee->update($request->validated());
+        $city = City::findOrFail($request->city_id);
+        $employee->update(array_merge($request->validated(), [
+            'country_id' => $city->state->country_id,
+            'state_id' => $city->state_id,
+        ]));
 
         Toast::title('Updated!')
             ->message('Employee updated successfully')
