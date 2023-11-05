@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Tables\Users;
 use Illuminate\Http\Request;
 use ProtoneMedia\Splade\Facades\Toast;
+use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class UserController extends Controller
 {
@@ -26,7 +28,10 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('admin.users.create');
+        return view('admin.users.create', [
+            'permissions' => Permission::pluck('name', 'id')->toArray(),
+            'roles' => Role::pluck('name', 'id')->toArray()
+        ]);
     }
 
     /**
@@ -34,7 +39,9 @@ class UserController extends Controller
      */
     public function store(StoreUserRequest $request)
     {
-        User::create($request->validated());
+        $user = User::create($request->validated());
+        $user->syncRoles($request->roles);
+        $user->syncPermissions($request->permissions);
         Toast::title('Created!')
             ->message('New user created successfully')
             ->success()
@@ -57,7 +64,11 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        return view('admin.users.edit', [
+            'permissions' => Permission::pluck('name', 'id')->toArray(),
+            'roles' => Role::pluck('name', 'id')->toArray(),
+            'user' => $user
+        ]);
     }
 
     /**
@@ -66,6 +77,8 @@ class UserController extends Controller
     public function update(UpdateUserRequest $request, User $user)
     {
         $user->update($request->validated());
+        $user->syncRoles($request->roles);
+        $user->syncPermissions($request->permissions);
         // Splade::toast("User updated successfully!");
         Toast::title('Updated!')
             ->message('user updated successfully')
@@ -83,11 +96,11 @@ class UserController extends Controller
     {
         $user->delete();
         Toast::title('Deleted!')
-        ->message('User deleted successfully')
-        ->success()
-        ->rightTop()
-        ->backdrop()
-        ->autoDismiss(1);
-    return to_route('admin.users.index');
+            ->message('User deleted successfully')
+            ->success()
+            ->rightTop()
+            ->backdrop()
+            ->autoDismiss(1);
+        return to_route('admin.users.index');
     }
 }

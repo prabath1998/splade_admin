@@ -11,6 +11,7 @@ use ProtoneMedia\Splade\FormBuilder\Input;
 use ProtoneMedia\Splade\FormBuilder\Submit;
 use ProtoneMedia\Splade\SpladeForm;
 use Spatie\Permission\Models\Permission;
+use Spatie\Permission\Models\Role;
 
 class PermissionController extends Controller
 {
@@ -24,23 +25,15 @@ class PermissionController extends Controller
 
     public function create()
     {
-        $form = SpladeForm::make()
-            ->action(route('admin.permissions.store'))
-            ->class('space-y-4 p-4 bg-white rounded')
-            ->fields([
-                Input::make('name')->label('Name'),
-
-                Submit::make()->label('Save')
-            ]);
-
         return view('admin.permissions.create', [
-            'form' => $form
+            'roles' => Role::pluck('name', 'id')->toArray()
         ]);
     }
 
     public function store(CreatePermissionRequest $request)
     {
-        Permission::create($request->validated());
+        $permission = Permission::create($request->validated());
+        $permission->syncRoles($request->roles);
 
         Toast::title('Created!')
             ->message('New permission created successfully')
@@ -53,25 +46,16 @@ class PermissionController extends Controller
 
     public function edit(Permission $permission)
     {
-        $form = SpladeForm::make()
-            ->action(route('admin.permissions.update', $permission))
-            ->method('PUT')
-            ->class('space-y-4 p-4 bg-white rounded')
-            ->fill($permission)
-            ->fields([
-                Input::make('name')->label('Name'),
-
-                Submit::make()->label('Save')
-            ]);
-
         return view('admin.permissions.edit', [
-            'form' => $form
+            'permission' => $permission,
+            'roles' => Role::pluck('name', 'id')->toArray()
         ]);
     }
 
     public function update(UpdatePermissionRequest $request, Permission $permission)
     {
         $permission->update($request->validated());
+        $permission->syncRoles($request->roles);
 
         Toast::title('Updated!')
             ->message('Permission updated successfully')

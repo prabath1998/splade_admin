@@ -48,7 +48,7 @@ class Permissions extends AbstractTable
                 });
             });
         });
-        return QueryBuilder::for(ModelsPermission::class::where('name','!=','admin'))
+        return QueryBuilder::for(ModelsPermission::class)
             ->defaultSort('id')
             ->allowedSorts(['id', 'name'])
             ->allowedFilters(['id', 'name', $globalSearch]);

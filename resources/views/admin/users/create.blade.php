@@ -7,6 +7,8 @@
         <x-splade-input name="email" label="Email Address" />
         <x-splade-input type="password" name="password" label="Password" />
         <x-splade-input type="password" name="password_confirmation" label="Confirm Password" />
+        <x-splade-select label="Role" name="roles[]" :options="$roles" multiple relation choices />
+        <x-splade-select label="Permissions" name="permissions[]" :options="$permissions" multiple relation choices />
 
         <x-splade-submit />
     </x-splade-form>
