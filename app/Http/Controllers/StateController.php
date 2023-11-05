@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Forms\CreateStateForm;
+use App\Forms\UpdateStateForm;
+use App\Models\State;
+use App\Tables\States;
 use Illuminate\Http\Request;
+use ProtoneMedia\Splade\Facades\Toast;
 
 class StateController extends Controller
 {
@@ -11,7 +16,9 @@ class StateController extends Controller
      */
     public function index()
     {
-        //
+        return view('admin.states.index', [
+            'states' => States::class
+        ]);
     }
 
     /**
@@ -19,15 +26,25 @@ class StateController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.states.create', [
+            'form' => CreateStateForm::class
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, CreateStateForm $form)
     {
-        //
+        $data = $form->validate($request);
+        State::create($data);
+        Toast::title('Created!')
+            ->message('New state created successfully')
+            ->success()
+            ->rightTop()
+            ->backdrop()
+            ->autoDismiss(1);
+        return to_route('admin.states.index');
     }
 
     /**
@@ -41,24 +58,44 @@ class StateController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(State $state)
     {
-        //
+        return view('admin.states.edit', [
+            'form' => UpdateStateForm::make()
+                ->action(route('admin.states.update', $state))
+                ->fill($state)
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, State $state, UpdateStateForm $form)
     {
-        //
+        $data = $form->validate($request);
+        $state->update($data);
+        Toast::title('Updated!')
+            ->message('State updated successfully')
+            ->success()
+            ->rightTop()
+            ->backdrop()
+            ->autoDismiss(1);
+        return to_route('admin.states.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(State $state)
     {
-        //
+        $state->delete();
+        Toast::title('Deleted!')
+            ->message('State deleted successfully')
+            ->success()
+            ->rightTop()
+            ->backdrop()
+            ->autoDismiss(1);
+
+        return back();
     }
 }
