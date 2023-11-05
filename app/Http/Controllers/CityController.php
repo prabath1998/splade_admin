@@ -76,22 +76,21 @@ class CityController extends Controller
     public function edit(City $city)
     {
         $form = SpladeForm::make()
-        ->action(route('admin.cities.update', $city))
-        ->method('PUT')
-        ->class('space-y-4 p-4 bg-white rounded')
-        ->fill($city)
-        ->fields([
-            Input::make('name')->label('Name'),
-            Select::make('state_id')
-                ->label('Choose a state')
-                ->options(State::pluck('name', 'id')->toArray()),
-            Submit::make()->label('Save')
+            ->action(route('admin.cities.update', $city))
+            ->method('PUT')
+            ->class('space-y-4 p-4 bg-white rounded')
+            ->fill($city)
+            ->fields([
+                Input::make('name')->label('Name'),
+                Select::make('state_id')
+                    ->label('Choose a state')
+                    ->options(State::pluck('name', 'id')->toArray()),
+                Submit::make()->label('Save')
+            ]);
+
+        return view('admin.cities.edit', [
+            'form' => $form
         ]);
-
-    return view('admin.cities.edit', [
-        'form' => $form
-    ]);
-
     }
 
     /**
@@ -117,11 +116,11 @@ class CityController extends Controller
     {
         $city->delete();
         Toast::title('Deleted!')
-        ->message('City deleted successfully')
-        ->success()
-        ->rightTop()
-        ->backdrop()
-        ->autoDismiss(1);
-    return back();
+            ->message('City deleted successfully')
+            ->success()
+            ->rightTop()
+            ->backdrop()
+            ->autoDismiss(1);
+        return back();
     }
 }
